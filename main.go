@@ -12,8 +12,8 @@ type CoinGeckoResponse struct {
 	Usd float64 `json:"usd"`
 }
 
-func fetchCurrentPrice(crypto, apiKey string) (float64, error) {
-	// Construct the API URL
+func fetchCurrentPrice(crypto string) (float64, error) {
+	//  API URL Construction
 	url := fmt.Sprintf("https://api.coingecko.com/api/v3/simple/price?ids=%s&vs_currencies=usd", crypto)
 
 	// Make the HTTP request
@@ -28,14 +28,11 @@ func fetchCurrentPrice(crypto, apiKey string) (float64, error) {
 		return 0, fmt.Errorf("non-200 response status: %s", response.Status)
 	}
 
-	// Read the response body
+	// Reading the response body
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read response body: %w", err)
 	}
-
-	// Log the response body for debugging
-	fmt.Println("API Response:", string(body))
 
 	// Unmarshal the JSON response
 	var result map[string]CoinGeckoResponse
@@ -43,7 +40,7 @@ func fetchCurrentPrice(crypto, apiKey string) (float64, error) {
 		return 0, fmt.Errorf("failed to unmarshal JSON: %w", err)
 	}
 
-	// Extract the price
+	// Extracting the current price
 	coinResponse, ok := result[crypto]
 	if !ok {
 		return 0, fmt.Errorf("cryptocurrency not found in response")
@@ -53,9 +50,8 @@ func fetchCurrentPrice(crypto, apiKey string) (float64, error) {
 }
 
 func main() {
-	crypto := "bitcoin" // Example cryptocurrency
-	apiKey := "c9d78726-9358-4724-bc8c-b8072f94d4f9"
-	price, err := fetchCurrentPrice(crypto, apiKey)
+	crypto := "bitcoin" 
+	price, err := fetchCurrentPrice(crypto)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -63,3 +59,4 @@ func main() {
 
 	fmt.Printf("The current price of %s is $%.2f\n", crypto, price)
 }
+
